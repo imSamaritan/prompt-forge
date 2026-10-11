@@ -10,6 +10,15 @@ document.addEventListener('alpine:init', () => {
     step: 1, // 1: Archetype, 2: Granular UI Sections, 3: Tech Stack, 4: Compiled Prompt
     activeSectionIndex: 0,
     selectedArchetypeId: null,
+    hasContinued: false,
+
+    // Toast Notification State
+    toast: {
+      show: false,
+      message: '',
+      type: 'danger'
+    },
+    toastTimer: null,
 
     // Schema Data
     schema: window.JAT_SCHEMA || { archetypes: [], techStack: {} },
@@ -84,6 +93,21 @@ document.addEventListener('alpine:init', () => {
       }
     },
 
+    showToast(message = 'Please select a category before continuing.', type = 'danger') {
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+      this.toast.message = message;
+      this.toast.type = type;
+      this.toast.show = true;
+      this.toastTimer = setTimeout(() => {
+        this.toast.show = false;
+      }, 4000);
+    },
+
+    hideToast() {
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+      this.toast.show = false;
+    },
+
     initAnswerTrees() {
       if (!this.schema.archetypes) return;
 
@@ -117,6 +141,11 @@ document.addEventListener('alpine:init', () => {
           if (parsed.techSelections) this.techSelections = Object.assign(this.techSelections, parsed.techSelections);
           if (parsed.activeSectionIndex !== undefined) this.activeSectionIndex = parsed.activeSectionIndex;
           if (parsed.step) this.step = parsed.step;
+          if (parsed.hasContinued !== undefined) {
+            this.hasContinued = !!parsed.hasContinued;
+          } else {
+            this.hasContinued = this.step > 1;
+          }
           if (parsed.finalPrompt) this.finalPrompt = parsed.finalPrompt;
           if (parsed.darkMode !== undefined && !localStorage.getItem('promptforge_theme')) {
             this.darkMode = !!parsed.darkMode;
@@ -136,6 +165,7 @@ document.addEventListener('alpine:init', () => {
           answers: this.answers,
           techSelections: this.techSelections,
           step: this.step,
+          hasContinued: this.hasContinued,
           finalPrompt: this.finalPrompt,
           darkMode: this.darkMode
         };
@@ -150,13 +180,20 @@ document.addEventListener('alpine:init', () => {
     // Archetype selection
     selectArchetype(id) {
       this.selectedArchetypeId = id;
+      if (this.toast.show) {
+        this.hideToast();
+      }
       this.saveState();
     },
 
     selectAndConfigure(id) {
       this.selectedArchetypeId = id;
+      this.hasContinued = true;
       this.activeSectionIndex = 0;
       this.step = 2;
+      if (this.toast.show) {
+        this.hideToast();
+      }
       this.saveState();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
@@ -221,8 +258,10 @@ document.addEventListener('alpine:init', () => {
     nextStep() {
       if (this.step === 1) {
         if (!this.selectedArchetypeId) {
-          this.selectedArchetypeId = 'portfolio';
+          this.showToast('Please select a category before continuing.');
+          return;
         }
+        this.hasContinued = true;
         this.activeSectionIndex = 0;
         this.step = 2;
       } else if (this.step === 2) {
@@ -252,6 +291,7 @@ document.addEventListener('alpine:init', () => {
           return;
         } else {
           this.step = 1;
+          this.hasContinued = false;
         }
       } else if (this.step === 3) {
         this.step = 2;
@@ -363,8 +403,12 @@ document.addEventListener('alpine:init', () => {
     resetWizard() {
       this.step = 1;
       this.selectedArchetypeId = null;
+      this.hasContinued = false;
       this.activeSectionIndex = 0;
       this.finalPrompt = '';
+      if (this.toast.show) {
+        this.hideToast();
+      }
       this.techSelections = {
         css: "tailwind",
         icons: "fontawesome",
