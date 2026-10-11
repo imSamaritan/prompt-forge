@@ -35,6 +35,9 @@ document.addEventListener('alpine:init', () => {
     pwaInstallPrompt: null,
     isOnline: navigator.onLine,
 
+    // Theme Mode State (Default is Light Mode)
+    darkMode: false,
+
     init() {
       // Setup network connectivity listeners
       window.addEventListener('online', () => this.isOnline = true);
@@ -46,11 +49,39 @@ document.addEventListener('alpine:init', () => {
         this.pwaInstallPrompt = e;
       });
 
+      // Initialize theme: Default to Light mode unless user saved 'dark'
+      const savedTheme = localStorage.getItem('promptforge_theme');
+      this.darkMode = savedTheme === 'dark';
+      this.applyTheme();
+
       // Initialize default answer trees for all archetypes
       this.initAnswerTrees();
 
       // Load saved state from LocalStorage if available
       this.loadSavedState();
+    },
+
+    toggleTheme() {
+      this.darkMode = !this.darkMode;
+      this.applyTheme();
+      try {
+        localStorage.setItem('promptforge_theme', this.darkMode ? 'dark' : 'light');
+      } catch (e) {
+        console.warn('[PromptForge] Could not save theme preference:', e);
+      }
+      this.saveState();
+    },
+
+    applyTheme() {
+      const root = document.documentElement;
+      const themeMeta = document.getElementById('theme-color-meta');
+      if (this.darkMode) {
+        root.classList.add('dark');
+        if (themeMeta) themeMeta.setAttribute('content', '#080c14');
+      } else {
+        root.classList.remove('dark');
+        if (themeMeta) themeMeta.setAttribute('content', '#f8fafc');
+      }
     },
 
     initAnswerTrees() {
@@ -87,6 +118,10 @@ document.addEventListener('alpine:init', () => {
           if (parsed.activeSectionIndex !== undefined) this.activeSectionIndex = parsed.activeSectionIndex;
           if (parsed.step) this.step = parsed.step;
           if (parsed.finalPrompt) this.finalPrompt = parsed.finalPrompt;
+          if (parsed.darkMode !== undefined && !localStorage.getItem('promptforge_theme')) {
+            this.darkMode = !!parsed.darkMode;
+            this.applyTheme();
+          }
         }
       } catch (e) {
         console.warn('[PromptForge] Could not parse saved state:', e);
@@ -101,7 +136,8 @@ document.addEventListener('alpine:init', () => {
           answers: this.answers,
           techSelections: this.techSelections,
           step: this.step,
-          finalPrompt: this.finalPrompt
+          finalPrompt: this.finalPrompt,
+          darkMode: this.darkMode
         };
         localStorage.setItem('promptforge_builder_state', JSON.stringify(payload));
         // Also save for backward compatibility
@@ -274,7 +310,7 @@ document.addEventListener('alpine:init', () => {
       // 3. Technical Implementation & Execution Directives
       p += `---\n\n`;
       p += `### 3. TECHNICAL IMPLEMENTATION & EXECUTION RULES\n`;
-      p += `1. **Visual Polish & Styling Integrity**: Adhere strictly to dark slate aesthetic with glowing accents, smooth micro-interactions, responsive flex/grid layouts, and pixel-perfect element spacing.\n`;
+      p += `1. **Visual Polish & Styling Integrity**: Adhere strictly to modern clean aesthetic with responsive light & dark mode support, polished accents, smooth micro-interactions, responsive flex/grid layouts, and pixel-perfect element spacing.\n`;
       p += `2. **Component Modularity**: Structure code into clean, decoupled, maintainable components with zero dead code or placeholder stubbing.\n`;
       p += `3. **State & Reactive Logic**: Ensure instantaneous state synchronization, resilient offline-first persistence where appropriate, and elegant feedback states (loaders, toasts, error boundaries).\n`;
       p += `4. **Zero-Placeholder Guarantee**: Write fully completed, ready-to-deploy code adhering strictly to the selected dependencies and requirements above.\n`;
