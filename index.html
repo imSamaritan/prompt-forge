@@ -359,7 +359,34 @@
 
       <div class="space-y-6">
 
-        <!-- 1. CSS Framework & Styling -->
+        <!-- 1. JavaScript Framework -->
+        <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+            </svg>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white">JavaScript Framework</h4>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <template x-for="fw in (schema.techStack.javascriptFrameworks || schema.techStack.reactivityEngines)" :key="fw.id">
+              <div 
+                class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition text-xs sm:text-sm"
+                :class="techSelections.reactivity === fw.id 
+                  ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 dark:border-[#6366f1] dark:bg-[#161f38] dark:text-white font-medium shadow-sm' 
+                  : 'border-slate-200 bg-slate-50/80 hover:bg-slate-100 text-slate-700 dark:border-[#1e293b] dark:bg-[#0c1220]/80 dark:hover:bg-[#11192c] dark:text-slate-300'"
+                @click="techSelections.reactivity = fw.id; saveState()"
+              >
+                <span class="mr-2" x-text="fw.name"></span>
+                <div class="shrink-0">
+                  <div x-show="techSelections.reactivity === fw.id" class="w-4 h-4 rounded-md bg-indigo-600 dark:bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
+                  <div x-show="techSelections.reactivity !== fw.id" class="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <!-- 2. CSS Framework & Styling -->
         <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
             <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -386,7 +413,7 @@
           </div>
         </div>
 
-        <!-- 2. Icon Library -->
+        <!-- 3. Icon Library -->
         <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
             <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -413,7 +440,7 @@
           </div>
         </div>
 
-        <!-- 3. HTTP & State Management -->
+        <!-- 4. HTTP & State Management -->
         <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
             <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -440,7 +467,7 @@
           </div>
         </div>
 
-        <!-- 4. Additional Utilities & Animation -->
+        <!-- 5. Additional Utilities & Animation -->
         <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
             <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -467,7 +494,7 @@
           </div>
         </div>
 
-        <!-- 5. Primary AI Coding Assistant Target -->
+        <!-- 6. Primary AI Coding Assistant Target -->
         <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
             <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
