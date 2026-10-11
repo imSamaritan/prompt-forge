@@ -2,6 +2,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
+  --pf-bg: #f8fafc;
+  --pf-surface: #ffffff;
+  --pf-surface-light: #f1f5f9;
+  --pf-border: #e2e8f0;
+  --pf-border-hover: #cbd5e1;
+  --pf-primary: #4f46e5;
+  --pf-primary-glow: rgba(79, 70, 229, 0.15);
+  --pf-cyan: #0284c7;
+  --pf-text: #0f172a;
+  --pf-text-muted: #475569;
+  --pf-text-dim: #64748b;
+}
+
+html.dark {
   --pf-bg: #070b13;
   --pf-surface: #0e1626;
   --pf-surface-light: #131b2e;
@@ -28,6 +42,7 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Custom Sleek Scrollbar */
@@ -36,29 +51,46 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #080c14;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+html.dark ::-webkit-scrollbar-track {
+  background: #080c14;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
 
 /* Code Display Pre Area */
 pre.prompt-terminal {
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+  background-color: #f8fafc;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  tab-size: 2;
+}
+
+html.dark pre.prompt-terminal {
   background-color: #090d16;
   color: #cbd5e1;
-  tab-size: 2;
+  border: none;
 }
 
 /* Selected Card Glow */
 .card-glow-selected {
-  border-color: #6366f1 !important;
-  box-shadow: 0 0 25px rgba(99, 102, 241, 0.25) !important;
-  background-color: #0e1626 !important;
+  border-color: var(--pf-primary) !important;
+  box-shadow: 0 0 25px var(--pf-primary-glow) !important;
+  background-color: var(--pf-surface) !important;
 }
 
 /* Smooth Transitions */

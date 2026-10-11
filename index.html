@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PromptForge | Alpine.js Powered AI Prompt Architect</title>
   <meta name="description" content="Alpine.js Powered AI Prompt Architect for Claude Code, Cursor, Lovable, and Antigravity">
-  <meta name="theme-color" content="#080c14">
+  <meta name="theme-color" content="#f8fafc" id="theme-color-meta">
+
+  <!-- Synchronous Theme Init: Default to Light mode unless user saved 'dark' -->
+  <script>
+    (function() {
+      try {
+        var savedTheme = localStorage.getItem('promptforge_theme');
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+          var meta = document.getElementById('theme-color-meta');
+          if (meta) meta.setAttribute('content', '#080c14');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
 
   <!-- PWA Manifest & Icons -->
   <link rel="manifest" href="manifest.json">
@@ -40,7 +56,7 @@
   <script src="js/app.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 </head>
-<body x-data="jatBuilder" class="bg-[#070b13] text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500 selection:text-white">
+<body x-data="jatBuilder" class="bg-slate-50 dark:bg-[#070b13] text-slate-800 dark:text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500 selection:text-white transition-colors duration-200">
 
   <!-- Offline Status Banner -->
   <div x-show="!isOnline" class="offline-banner" x-transition>
@@ -48,44 +64,63 @@
   </div>
 
   <!-- App Header & Navigation Bar -->
-  <header class="w-full border-b border-[#1e293b]/60 bg-[#070b13]/90 backdrop-blur sticky top-0 z-30">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+  <header class="w-full border-b border-slate-200 dark:border-[#1e293b]/60 bg-white/90 dark:bg-[#070b13]/90 backdrop-blur sticky top-0 z-30 transition-colors duration-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
       
       <!-- Brand Logo & Title -->
-      <div class="flex items-center gap-3 cursor-pointer" @click="step = 1; scrollTo({ top: 0, behavior: 'smooth' })">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-400 via-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0">
+      <div class="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none" @click="step = 1; scrollTo({ top: 0, behavior: 'smooth' })">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-sky-400 via-blue-500 to-indigo-600 flex items-center justify-center shadow-md shadow-indigo-500/20 shrink-0">
           <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 4V2m0 16v-2m7-7h-2M6 11H4m14.5 6.5L17 16m-9-9L6.5 5.5m0 11L8 15m9-9l1.5-1.5"/>
             <path d="M2 22l10-10"/>
           </svg>
         </div>
         <div>
-          <h1 class="text-lg font-extrabold tracking-tight text-white leading-tight">PromptForge</h1>
-          <p class="text-xs text-slate-400 font-medium">Alpine.js Powered AI Prompt Architect</p>
+          <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">PromptForge</h1>
+          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Alpine.js Powered AI Prompt Architect</p>
         </div>
       </div>
 
-      <!-- Header Action Badges & Reset -->
-      <div class="flex items-center gap-3">
+      <!-- Header Action Badges, Mode Switcher & Reset -->
+      <div class="flex items-center gap-2 sm:gap-3">
         <!-- Ready Badge -->
-        <div class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#111827] border border-[#1e293b] text-xs font-medium text-slate-300 shadow-sm">
-          <svg class="w-3.5 h-3.5 text-sky-400" viewBox="0 0 24 24" fill="currentColor">
+        <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-[#111827] border border-slate-200 dark:border-[#1e293b] text-xs font-medium text-slate-600 dark:text-slate-300 shadow-sm">
+          <svg class="w-3.5 h-3.5 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="currentColor">
             <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
           </svg>
           <span>Claude Code, Cursor &amp; Lovable Ready</span>
         </div>
 
+        <!-- Mode Switcher Button -->
+        <button 
+          @click="toggleTheme()" 
+          type="button"
+          class="flex items-center justify-center h-8 sm:h-8.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-[#111827] dark:hover:bg-[#1e293b] border border-slate-200 dark:border-[#1e293b] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+          :title="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+          :aria-label="darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+        >
+          <!-- Sun Icon (shown in dark mode) -->
+          <svg x-show="darkMode" class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <!-- Moon Icon (shown in light mode) -->
+          <svg x-show="!darkMode" class="w-4 h-4 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <span class="text-xs font-semibold ml-1.5 hidden sm:inline" x-text="darkMode ? 'Light' : 'Dark'"></span>
+        </button>
+
         <!-- Reset Button -->
         <button 
           @click="resetWizard()" 
           type="button"
-          class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#111827] hover:bg-[#1e293b] border border-[#1e293b] text-xs font-medium text-slate-300 hover:text-white transition cursor-pointer shadow-sm"
+          class="flex items-center gap-1.5 h-8 sm:h-8.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-[#111827] dark:hover:bg-[#1e293b] border border-slate-200 dark:border-[#1e293b] text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
           title="Reset Wizard"
         >
-          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <svg class="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          <span>Reset</span>
+          <span class="hidden xs:inline sm:inline">Reset</span>
         </button>
       </div>
 
@@ -98,19 +133,19 @@
     <!-- Step Breadcrumb Header & Progress Line -->
     <div class="w-full mb-8">
       <div class="flex items-center justify-between text-xs mb-2.5">
-        <span class="font-bold tracking-widest text-indigo-400 uppercase">
+        <span class="font-bold tracking-widest text-indigo-600 dark:text-indigo-400 uppercase">
           STEP <span x-text="step"></span> OF 4
         </span>
-        <span class="text-slate-400 font-medium" x-text="
+        <span class="text-slate-500 dark:text-slate-400 font-medium" x-text="
           step === 1 ? 'App Type Selection' :
           (step === 2 ? 'App Type Selection' :
           (step === 3 ? 'Tech Stack & Dependencies' : 'Generated AI Prompt'))
         "></span>
       </div>
       <!-- Progress Bar Track -->
-      <div class="w-full h-[3px] bg-[#1e293b] rounded-full overflow-hidden">
+      <div class="w-full h-[3px] bg-slate-200 dark:bg-[#1e293b] rounded-full overflow-hidden">
         <div 
-          class="h-full bg-gradient-to-r from-sky-400 to-indigo-500 rounded-full transition-all duration-300 ease-out"
+          class="h-full bg-gradient-to-r from-sky-400 to-indigo-600 rounded-full transition-all duration-300 ease-out"
           :style="'width: ' + (step === 1 ? '25%' : (step === 2 ? '50%' : (step === 3 ? '75%' : '100%')))"
         ></div>
       </div>
@@ -122,10 +157,10 @@
     <section x-show="step === 1" x-transition.opacity.duration.200ms>
       <!-- Title & Subtitle -->
       <div class="mb-8">
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           What kind of web app are you building?
         </h2>
-        <p class="text-sm sm:text-base text-slate-400 mt-2 max-w-3xl leading-relaxed">
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-3xl leading-relaxed">
           Select your core application category. This will dynamically shape the deep-dive questions for your architecture and UI components.
         </p>
       </div>
@@ -134,71 +169,71 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         <template x-for="arch in schema.archetypes" :key="arch.id">
           <div 
-            class="group relative rounded-2xl p-6 transition-all duration-200 cursor-pointer flex flex-col justify-between border"
+            class="group relative rounded-2xl p-6 transition-all duration-200 cursor-pointer flex flex-col justify-between border shadow-sm hover:shadow"
             :class="selectedArchetypeId === arch.id 
-              ? 'border-2 border-[#6366f1] bg-[#0e1626] shadow-[0_0_25px_rgba(99,102,241,0.25)]' 
-              : 'border-[#1e293b] bg-[#0e1626]/70 hover:bg-[#0e1626] hover:border-slate-700'"
+              ? 'border-2 border-indigo-600 dark:border-[#6366f1] bg-indigo-50/50 dark:bg-[#0e1626] shadow-[0_0_20px_rgba(99,102,241,0.2)] dark:shadow-[0_0_25px_rgba(99,102,241,0.25)] ring-1 ring-indigo-500/30' 
+              : 'border-slate-200 dark:border-[#1e293b] bg-white dark:bg-[#0e1626]/70 hover:bg-slate-50/90 dark:hover:bg-[#0e1626] hover:border-slate-300 dark:hover:border-slate-700'"
             @click="selectArchetype(arch.id)"
           >
             <div>
               <!-- Top Row: Icon + Badge -->
               <div class="flex items-center justify-between mb-4">
-                <div class="w-10 h-10 rounded-xl bg-[#141b2d] border border-[#1e293b] flex items-center justify-center shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-[#141b2d] border border-indigo-100 dark:border-[#1e293b] flex items-center justify-center shrink-0">
                   <!-- User Icon -->
                   <template x-if="arch.icon === 'user'">
-                    <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
                   </template>
                   <!-- Chart Icon -->
                   <template x-if="arch.icon === 'chart'">
-                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                     </svg>
                   </template>
                   <!-- Bag Icon -->
                   <template x-if="arch.icon === 'bag'">
-                    <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2zm6 16H6V8h2v2c0 .55.45 1 1 1s1-.45 1-1V8h4v2c0 .55.45 1 1 1s1-.45 1-1V8h2v12z"/>
                     </svg>
                   </template>
                   <!-- Newspaper Icon -->
                   <template x-if="arch.icon === 'newspaper'">
-                    <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M20 3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 7h5v6H5V7zm14 10H5v-2h14v2zm0-4h-7v-2h7v2zm0-4h-7V7h7v2z"/>
                     </svg>
                   </template>
                   <!-- Chat Icon -->
                   <template x-if="arch.icon === 'chat'">
-                    <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
                     </svg>
                   </template>
                   <!-- Rocket Icon -->
                   <template x-if="arch.icon === 'rocket'">
-                    <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M13.13 2.05a1.002 1.002 0 00-.77.14C9.5 4.09 7.37 7.07 6.45 10.43c-.45 1.63-.49 3.23-.21 4.7l-3.53 3.53a.996.996 0 000 1.41l1.41 1.41c.39.39 1.02.39 1.41 0l3.53-3.53c1.47.28 3.07.24 4.7-.21 3.36-.92 6.34-3.05 8.24-5.91a1.003 1.003 0 00-.28-1.4c-2.31-1.63-4.9-2.58-7.58-2.78l1.45-1.45a1 1 0 000-1.41l-1.41-1.41c-.28-.28-.67-.4-.87-.33zM14 9a2 2 0 110-4 2 2 0 010 4z"/>
                     </svg>
                   </template>
                   <!-- Code Icon -->
                   <template x-if="arch.icon === 'code'">
-                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                     </svg>
                   </template>
                 </div>
                 <!-- Badge Pill -->
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#1e293b] text-slate-300" x-text="arch.badge"></span>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-[#1e293b] text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-transparent" x-text="arch.badge"></span>
               </div>
 
               <!-- Card Title & Description -->
-              <h3 class="text-lg font-bold text-white mb-2" x-text="arch.name"></h3>
-              <p class="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6" x-text="arch.subtitle"></p>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2" x-text="arch.name"></h3>
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6" x-text="arch.subtitle"></p>
             </div>
 
             <!-- Bottom Select Link -->
             <div 
-              class="pt-3 border-t border-[#1e293b]/60 flex items-center justify-between text-xs font-medium text-slate-400 group-hover:text-white transition"
+              class="pt-3 border-t border-slate-200 dark:border-[#1e293b]/60 flex items-center justify-between text-xs font-semibold text-indigo-600 dark:text-slate-400 group-hover:text-indigo-700 dark:group-hover:text-white transition"
               @click.stop="selectAndConfigure(arch.id)"
             >
               <span>Select &amp; Configure</span>
@@ -218,10 +253,10 @@
           <!-- Title & Section Navigation Tabs -->
           <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
             <div>
-              <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 <span x-text="currentArchetype.name"></span>: <span x-text="currentSection ? currentSection.name : ''"></span>
               </h2>
-              <p class="text-xs sm:text-sm text-slate-400 mt-1">
+              <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
                 Configure granular specifications for each section of your app.
               </p>
             </div>
@@ -233,8 +268,8 @@
                   type="button"
                   class="px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
                   :class="activeSectionIndex === sIdx 
-                    ? 'bg-[#6366f1] text-white shadow-sm' 
-                    : 'bg-[#1e293b] text-slate-300 hover:text-white hover:bg-slate-700'"
+                    ? 'bg-indigo-600 text-white shadow-sm ring-1 ring-indigo-500' 
+                    : 'bg-slate-100 hover:bg-slate-200 dark:bg-[#1e293b] text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white dark:hover:bg-slate-700 border border-slate-200 dark:border-transparent'"
                   @click="goToSection(sIdx)"
                   x-text="sec.name"
                 ></button>
@@ -246,17 +281,17 @@
           <template x-if="currentSection">
             <div class="space-y-5">
               <template x-for="q in currentSection.questions" :key="q.id">
-                <div class="rounded-2xl p-6 bg-[#0e1626]/70 border border-[#1e293b]">
+                <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
                   
                   <!-- Question Title & Section Tag -->
                   <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2">
-                      <div class="w-4 h-4 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center text-[10px] font-bold shrink-0">
+                      <div class="w-4 h-4 rounded-full bg-sky-500/15 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400 flex items-center justify-center text-[10px] font-bold shrink-0">
                         ?
                       </div>
-                      <h4 class="text-sm font-bold text-white" x-text="q.label"></h4>
+                      <h4 class="text-sm font-bold text-slate-900 dark:text-white" x-text="q.label"></h4>
                     </div>
-                    <span class="text-xs font-mono text-slate-500" x-text="currentSection.name"></span>
+                    <span class="text-xs font-mono text-slate-400 dark:text-slate-500" x-text="currentSection.name"></span>
                   </div>
 
                   <!-- Options Grid (2 columns) -->
@@ -265,8 +300,8 @@
                       <div
                         class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all duration-150 text-xs sm:text-sm"
                         :class="isOptionSelected(q, opt)
-                          ? 'border-[#6366f1] bg-[#161f38] text-white shadow-sm font-medium'
-                          : 'border-[#1e293b] bg-[#0c1220]/80 hover:bg-[#11192c] hover:border-slate-700 text-slate-300'"
+                          ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 dark:border-[#6366f1] dark:bg-[#161f38] dark:text-white shadow-sm font-medium'
+                          : 'border-slate-200 bg-slate-50/80 hover:bg-slate-100 hover:border-slate-300 text-slate-700 dark:border-[#1e293b] dark:bg-[#0c1220]/80 dark:hover:bg-[#11192c] dark:hover:border-slate-700 dark:text-slate-300'"
                         @click="toggleOption(q, opt)"
                       >
                         <span class="mr-2" x-text="opt"></span>
@@ -274,12 +309,12 @@
                         <!-- Checkmark or Radio Indicator -->
                         <div class="shrink-0">
                           <template x-if="isOptionSelected(q, opt)">
-                            <div class="w-4 h-4 rounded-md bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">
+                            <div class="w-4 h-4 rounded-md bg-indigo-600 dark:bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">
                               ✓
                             </div>
                           </template>
                           <template x-if="!isOptionSelected(q, opt)">
-                            <div class="w-4 h-4 rounded-full border border-slate-600"></div>
+                            <div class="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
                           </template>
                         </div>
                       </div>
@@ -291,7 +326,7 @@
                     <div class="mt-4">
                       <input 
                         type="text" 
-                        class="w-full bg-[#090d16] border border-[#1e293b] rounded-xl px-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] transition"
+                        class="w-full bg-slate-50 dark:bg-[#090d16] border border-slate-300 dark:border-[#1e293b] rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-indigo-600 dark:focus:border-[#6366f1] focus:ring-1 focus:ring-indigo-600 dark:focus:ring-[#6366f1] transition"
                         placeholder="Or type custom specification..."
                         x-model="answers[currentArchetype.id][currentSection.id][q.id].custom"
                         @input="saveState()"
@@ -314,10 +349,10 @@
     <section x-show="step === 3" x-transition.opacity.duration.200ms>
       <!-- Title & Subtitle -->
       <div class="mb-8">
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Tech Stack &amp; Dependencies
         </h2>
-        <p class="text-sm sm:text-base text-slate-400 mt-2 max-w-3xl leading-relaxed">
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-3xl leading-relaxed">
           Choose the libraries, frameworks, icons, and tooling your AI assistant should utilize.
         </p>
       </div>
@@ -325,26 +360,26 @@
       <div class="space-y-6">
 
         <!-- 1. CSS Framework & Styling -->
-        <div class="rounded-2xl p-6 bg-[#0e1626]/70 border border-[#1e293b]">
+        <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
-            <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>
-            <h4 class="text-sm font-bold text-white">CSS Framework &amp; Styling</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white">CSS Framework &amp; Styling</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <template x-for="css in schema.techStack.cssFrameworks" :key="css.id">
               <div 
                 class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition text-xs sm:text-sm"
                 :class="techSelections.css === css.id 
-                  ? 'border-[#6366f1] bg-[#161f38] text-white font-medium shadow-sm' 
-                  : 'border-[#1e293b] bg-[#0c1220]/80 hover:bg-[#11192c] text-slate-300'"
+                  ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 dark:border-[#6366f1] dark:bg-[#161f38] dark:text-white font-medium shadow-sm' 
+                  : 'border-slate-200 bg-slate-50/80 hover:bg-slate-100 text-slate-700 dark:border-[#1e293b] dark:bg-[#0c1220]/80 dark:hover:bg-[#11192c] dark:text-slate-300'"
                 @click="techSelections.css = css.id; saveState()"
               >
                 <span class="mr-2" x-text="css.name"></span>
                 <div class="shrink-0">
-                  <div x-show="techSelections.css === css.id" class="w-4 h-4 rounded-md bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
-                  <div x-show="techSelections.css !== css.id" class="w-4 h-4 rounded-full border border-slate-600"></div>
+                  <div x-show="techSelections.css === css.id" class="w-4 h-4 rounded-md bg-indigo-600 dark:bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
+                  <div x-show="techSelections.css !== css.id" class="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
                 </div>
               </div>
             </template>
@@ -352,26 +387,26 @@
         </div>
 
         <!-- 2. Icon Library -->
-        <div class="rounded-2xl p-6 bg-[#0e1626]/70 border border-[#1e293b]">
+        <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
-            <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>
-            <h4 class="text-sm font-bold text-white">Icon Library</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Icon Library</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <template x-for="icon in schema.techStack.iconLibraries" :key="icon.id">
               <div 
                 class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition text-xs sm:text-sm"
                 :class="techSelections.icons === icon.id 
-                  ? 'border-[#6366f1] bg-[#161f38] text-white font-medium shadow-sm' 
-                  : 'border-[#1e293b] bg-[#0c1220]/80 hover:bg-[#11192c] text-slate-300'"
+                  ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 dark:border-[#6366f1] dark:bg-[#161f38] dark:text-white font-medium shadow-sm' 
+                  : 'border-slate-200 bg-slate-50/80 hover:bg-slate-100 text-slate-700 dark:border-[#1e293b] dark:bg-[#0c1220]/80 dark:hover:bg-[#11192c] dark:text-slate-300'"
                 @click="techSelections.icons = icon.id; saveState()"
               >
                 <span class="mr-2" x-text="icon.name"></span>
                 <div class="shrink-0">
-                  <div x-show="techSelections.icons === icon.id" class="w-4 h-4 rounded-md bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
-                  <div x-show="techSelections.icons !== icon.id" class="w-4 h-4 rounded-full border border-slate-600"></div>
+                  <div x-show="techSelections.icons === icon.id" class="w-4 h-4 rounded-md bg-indigo-600 dark:bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
+                  <div x-show="techSelections.icons !== icon.id" class="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
                 </div>
               </div>
             </template>
@@ -379,26 +414,26 @@
         </div>
 
         <!-- 3. HTTP & State Management -->
-        <div class="rounded-2xl p-6 bg-[#0e1626]/70 border border-[#1e293b]">
+        <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
-            <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>
-            <h4 class="text-sm font-bold text-white">HTTP &amp; State Management</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white">HTTP &amp; State Management</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <template x-for="http in schema.techStack.httpClients" :key="http.id">
               <div 
                 class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition text-xs sm:text-sm"
                 :class="techSelections.http === http.id 
-                  ? 'border-[#6366f1] bg-[#161f38] text-white font-medium shadow-sm' 
-                  : 'border-[#1e293b] bg-[#0c1220]/80 hover:bg-[#11192c] text-slate-300'"
+                  ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 dark:border-[#6366f1] dark:bg-[#161f38] dark:text-white font-medium shadow-sm' 
+                  : 'border-slate-200 bg-slate-50/80 hover:bg-slate-100 text-slate-700 dark:border-[#1e293b] dark:bg-[#0c1220]/80 dark:hover:bg-[#11192c] dark:text-slate-300'"
                 @click="techSelections.http = http.id; saveState()"
               >
                 <span class="mr-2" x-text="http.name"></span>
                 <div class="shrink-0">
-                  <div x-show="techSelections.http === http.id" class="w-4 h-4 rounded-md bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
-                  <div x-show="techSelections.http !== http.id" class="w-4 h-4 rounded-full border border-slate-600"></div>
+                  <div x-show="techSelections.http === http.id" class="w-4 h-4 rounded-md bg-indigo-600 dark:bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
+                  <div x-show="techSelections.http !== http.id" class="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
                 </div>
               </div>
             </template>
@@ -406,26 +441,26 @@
         </div>
 
         <!-- 4. Additional Utilities & Animation -->
-        <div class="rounded-2xl p-6 bg-[#0e1626]/70 border border-[#1e293b]">
+        <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
-            <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>
-            <h4 class="text-sm font-bold text-white">Additional Utilities &amp; Animation</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Additional Utilities &amp; Animation</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <template x-for="util in (schema.techStack.utilities || [])" :key="util.id">
               <div 
                 class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition text-xs sm:text-sm"
                 :class="techSelections.utilities === util.id 
-                  ? 'border-[#6366f1] bg-[#161f38] text-white font-medium shadow-sm' 
-                  : 'border-[#1e293b] bg-[#0c1220]/80 hover:bg-[#11192c] text-slate-300'"
+                  ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 dark:border-[#6366f1] dark:bg-[#161f38] dark:text-white font-medium shadow-sm' 
+                  : 'border-slate-200 bg-slate-50/80 hover:bg-slate-100 text-slate-700 dark:border-[#1e293b] dark:bg-[#0c1220]/80 dark:hover:bg-[#11192c] dark:text-slate-300'"
                 @click="techSelections.utilities = util.id; saveState()"
               >
                 <span class="mr-2" x-text="util.name"></span>
                 <div class="shrink-0">
-                  <div x-show="techSelections.utilities === util.id" class="w-4 h-4 rounded-md bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
-                  <div x-show="techSelections.utilities !== util.id" class="w-4 h-4 rounded-full border border-slate-600"></div>
+                  <div x-show="techSelections.utilities === util.id" class="w-4 h-4 rounded-md bg-indigo-600 dark:bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
+                  <div x-show="techSelections.utilities !== util.id" class="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
                 </div>
               </div>
             </template>
@@ -433,26 +468,26 @@
         </div>
 
         <!-- 5. Primary AI Coding Assistant Target -->
-        <div class="rounded-2xl p-6 bg-[#0e1626]/70 border border-[#1e293b]">
+        <div class="rounded-2xl p-6 bg-white dark:bg-[#0e1626]/70 border border-slate-200 dark:border-[#1e293b] shadow-sm">
           <div class="flex items-center gap-2 mb-4">
-            <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="w-4 h-4 text-sky-500 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>
-            <h4 class="text-sm font-bold text-white">Primary AI Coding Assistant Target</h4>
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white">Primary AI Coding Assistant Target</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             <template x-for="agent in schema.techStack.targetAgents" :key="agent.id">
               <div 
                 class="p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition text-xs sm:text-sm"
                 :class="techSelections.targetAgent === agent.id 
-                  ? 'border-[#6366f1] bg-[#161f38] text-white font-medium shadow-sm' 
-                  : 'border-[#1e293b] bg-[#0c1220]/80 hover:bg-[#11192c] text-slate-300'"
+                  ? 'border-indigo-600 bg-indigo-50/70 text-indigo-950 dark:border-[#6366f1] dark:bg-[#161f38] dark:text-white font-medium shadow-sm' 
+                  : 'border-slate-200 bg-slate-50/80 hover:bg-slate-100 text-slate-700 dark:border-[#1e293b] dark:bg-[#0c1220]/80 dark:hover:bg-[#11192c] dark:text-slate-300'"
                 @click="techSelections.targetAgent = agent.id; saveState()"
               >
                 <span class="mr-2" x-text="agent.name"></span>
                 <div class="shrink-0">
-                  <div x-show="techSelections.targetAgent === agent.id" class="w-4 h-4 rounded-md bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
-                  <div x-show="techSelections.targetAgent !== agent.id" class="w-4 h-4 rounded-full border border-slate-600"></div>
+                  <div x-show="techSelections.targetAgent === agent.id" class="w-4 h-4 rounded-md bg-indigo-600 dark:bg-[#6366f1] flex items-center justify-center text-white text-[10px] font-bold">✓</div>
+                  <div x-show="techSelections.targetAgent !== agent.id" class="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
                 </div>
               </div>
             </template>
@@ -468,19 +503,19 @@
     <section x-show="step === 4" x-transition.opacity.duration.200ms>
       <!-- Title & Subtitle -->
       <div class="mb-8">
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Your AI Builder Prompt is Ready!
         </h2>
-        <p class="text-sm sm:text-base text-slate-400 mt-2 max-w-3xl leading-relaxed">
+        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-400 mt-2 max-w-3xl leading-relaxed">
           Copy this comprehensive, structured blueprint and paste it directly into Claude Code, Cursor, Lovable, or Antigravity.
         </p>
       </div>
 
       <!-- Window Frame Prompt Card -->
-      <div class="rounded-2xl border border-[#1e293b] bg-[#090d16] shadow-2xl overflow-hidden mb-6">
+      <div class="rounded-2xl border border-slate-200 dark:border-[#1e293b] bg-white dark:bg-[#090d16] shadow-xl overflow-hidden mb-6">
         
         <!-- Window Title Bar -->
-        <div class="bg-[#0e1626] border-b border-[#1e293b] px-4 sm:px-6 py-3.5 flex items-center justify-between">
+        <div class="bg-slate-100 dark:bg-[#0e1626] border-b border-slate-200 dark:border-[#1e293b] px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
             <!-- macOS Dots -->
             <div class="flex items-center gap-2">
@@ -489,7 +524,7 @@
               <span class="w-3 h-3 rounded-full bg-[#22c55e]"></span>
             </div>
             <!-- Filename -->
-            <div class="flex items-center gap-1.5 text-xs font-mono text-slate-400 ml-2">
+            <div class="flex items-center gap-1.5 text-xs font-mono text-slate-600 dark:text-slate-400 ml-2">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
@@ -501,7 +536,7 @@
           <button 
             type="button"
             @click="copyPrompt()"
-            class="px-4 py-1.5 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition cursor-pointer"
+            class="px-3.5 sm:px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 dark:bg-[#6366f1] dark:hover:bg-[#4f46e5] text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition cursor-pointer shrink-0"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
@@ -511,12 +546,12 @@
         </div>
 
         <!-- Prompt Terminal Code Area -->
-        <pre class="prompt-terminal p-6 text-xs sm:text-sm leading-relaxed overflow-x-auto whitespace-pre-wrap max-h-[520px] overflow-y-auto select-all" x-text="finalPrompt"></pre>
+        <pre class="prompt-terminal p-4 sm:p-6 text-xs sm:text-sm leading-relaxed overflow-x-auto whitespace-pre-wrap max-h-[520px] overflow-y-auto select-all" x-text="finalPrompt"></pre>
 
         <!-- Card Bottom Bar: Quality Check & Download Button -->
-        <div class="bg-[#0e1626]/80 border-t border-[#1e293b] px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div class="flex items-center gap-2 text-xs text-slate-400 font-medium">
-            <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <div class="bg-slate-50 dark:bg-[#0e1626]/80 border-t border-slate-200 dark:border-[#1e293b] px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
+            <svg class="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <span>Engineered for zero ambiguity and maximum code quality.</span>
@@ -525,9 +560,9 @@
           <button 
             type="button"
             @click="downloadPromptFile()"
-            class="px-4 py-2 rounded-xl bg-[#111827] hover:bg-[#1e293b] border border-[#1e293b] text-xs font-semibold text-slate-200 flex items-center gap-2 transition cursor-pointer shadow-sm"
+            class="w-full sm:w-auto justify-center px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-[#111827] dark:hover:bg-[#1e293b] border border-slate-200 dark:border-[#1e293b] text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-2 transition cursor-pointer shadow-sm"
           >
-            <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <svg class="w-4 h-4 text-slate-500 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
             </svg>
             <span>Download .md</span>
@@ -540,7 +575,7 @@
   </main>
 
   <!-- Persistent Bottom Action Bar -->
-  <footer class="w-full border-t border-[#1e293b]/60 bg-[#070b13]/95 py-5 sticky bottom-0 z-20">
+  <footer class="w-full border-t border-slate-200 dark:border-[#1e293b]/60 bg-white/95 dark:bg-[#070b13]/95 backdrop-blur py-4 sm:py-5 sticky bottom-0 z-20 transition-colors duration-200">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between">
       
       <!-- Back Button -->
@@ -548,8 +583,8 @@
         type="button"
         @click="prevStep()"
         :disabled="step === 1"
-        class="px-4 py-2 rounded-xl border border-[#1e293b] bg-[#0e1626] text-xs sm:text-sm font-medium text-slate-400 flex items-center gap-2 transition"
-        :class="step === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-[#161f38] hover:text-white cursor-pointer'"
+        class="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#1e293b] bg-slate-100 dark:bg-[#0e1626] text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-400 flex items-center gap-2 transition shadow-sm"
+        :class="step === 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-slate-200 dark:hover:bg-[#161f38] hover:text-slate-900 dark:hover:text-white cursor-pointer'"
       >
         <span>←</span>
         <span>Back</span>
@@ -567,7 +602,7 @@
           <button 
             type="button"
             @click="nextStep()"
-            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#5558e6] hover:to-[#4338ca] text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/25 transition cursor-pointer"
+            class="px-5 sm:px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/25 transition cursor-pointer"
           >
             <span>Continue</span>
             <span>→</span>
@@ -579,7 +614,7 @@
           <button 
             type="button"
             @click="compilePrompt()"
-            class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#6366f1] to-[#4f46e5] hover:from-[#5558e6] hover:to-[#4338ca] text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/25 transition cursor-pointer"
+            class="px-5 sm:px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-lg shadow-indigo-500/25 transition cursor-pointer"
           >
             <span>Generate Prompt</span>
             <span>→</span>

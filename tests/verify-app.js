@@ -68,6 +68,10 @@ try {
   assert(html.includes('allowCustom'), 'index.html renders dynamic custom input box for features');
   assert(html.includes('copyPrompt'), 'index.html contains copy prompt action');
   assert(html.includes('downloadPromptFile'), 'index.html contains download prompt action');
+  assert(html.includes('<html lang="en">') && !html.includes('<html lang="en" class="dark">'), 'index.html defaults to light mode (no dark class on html root)');
+  assert(html.includes('toggleTheme()'), 'index.html contains top navigation mode switcher button');
+  assert(html.includes('darkMode ? \'Switch to Light Mode\' : \'Switch to Dark Mode\''), 'index.html has accessible mode switcher label/title');
+  assert(html.includes('promptforge_theme'), 'index.html contains early synchronous theme persistence check');
 } catch (e) {
   assert(false, `index.html validation failed: ${e.message}`);
 }
@@ -79,11 +83,22 @@ try {
   assert(appCode.includes('copyPrompt'), 'app.js implements copyPrompt()');
   assert(appCode.includes('downloadPromptFile'), 'app.js implements downloadPromptFile()');
   assert(appCode.includes('localStorage'), 'app.js implements localStorage offline persistence');
+  assert(appCode.includes('darkMode: false'), 'app.js sets light mode (darkMode: false) as default');
+  assert(appCode.includes('toggleTheme'), 'app.js implements toggleTheme() method');
+  assert(appCode.includes('applyTheme'), 'app.js implements applyTheme() method');
 } catch (e) {
   assert(false, `app.js validation failed: ${e.message}`);
 }
 
-// 4. Check Service Worker
+// 4. Check Stylesheet
+try {
+  const css = fs.readFileSync(path.join(__dirname, '../css/custom.css'), 'utf8');
+  assert(css.includes(':root') && css.includes('html.dark'), 'custom.css defines light mode :root and dark mode html.dark overrides');
+} catch (e) {
+  assert(false, `custom.css validation failed: ${e.message}`);
+}
+
+// 5. Check Service Worker
 try {
   const swCode = fs.readFileSync(path.join(__dirname, '../sw.js'), 'utf8');
   assert(swCode.includes('./js/schema.js'), 'sw.js pre-caches js/schema.js');
@@ -94,7 +109,7 @@ try {
   assert(false, `sw.js validation failed: ${e.message}`);
 }
 
-// 5. Check SVG Icon
+// 6. Check SVG Icon
 try {
   const iconCode = fs.readFileSync(path.join(__dirname, '../icons/icon.svg'), 'utf8');
   assert(iconCode.includes('<svg') && iconCode.includes('</svg>'), 'icons/icon.svg is valid SVG markup');
