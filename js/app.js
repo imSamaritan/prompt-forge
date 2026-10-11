@@ -270,6 +270,8 @@ document.addEventListener('alpine:init', () => {
       if (!arch) return;
 
       const tech = this.techSelections;
+      const fwList = (this.schema.techStack.javascriptFrameworks || this.schema.techStack.reactivityEngines || []);
+      const fwObj = fwList.find(f => f.id === tech.reactivity) || { name: "Alpine.js 3" };
       const cssObj = this.schema.techStack.cssFrameworks.find(c => c.id === tech.css) || { name: "Tailwind CSS v3/v4" };
       const iconObj = this.schema.techStack.iconLibraries.find(i => i.id === tech.icons) || { name: "FontAwesome / Lucide Icons" };
       const httpObj = this.schema.techStack.httpClients.find(h => h.id === tech.http) || { name: "Vanilla JS / Fetch API" };
@@ -284,6 +286,7 @@ document.addEventListener('alpine:init', () => {
       // 1. Core Architecture & Tech Stack
       p += `### 1. CORE ARCHITECTURE & TECH STACK\n`;
       p += `- **App Category**: ${arch.name} (${arch.subtitle})\n`;
+      p += `- **JavaScript Framework**: ${fwObj.name}\n`;
       p += `- **CSS Framework**: ${cssObj.name}\n`;
       p += `- **Icon Library**: ${iconObj.name}\n`;
       p += `- **HTTP & State**: ${httpObj.name}\n`;

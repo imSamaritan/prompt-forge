@@ -49,6 +49,9 @@ try {
   // Tech stack validation
   const ts = schema.techStack;
   assert(ts && ts.cssFrameworks && ts.iconLibraries && ts.httpClients && ts.reactivityEngines && ts.targetAgents, 'Tech stack options categories exist');
+  assert(ts.javascriptFrameworks && Array.isArray(ts.javascriptFrameworks), 'JavaScript frameworks category exists in schema');
+  const fwIds = (ts.javascriptFrameworks || ts.reactivityEngines).map(f => f.id);
+  assert(fwIds.includes('alpine') && fwIds.includes('vue') && fwIds.includes('react') && fwIds.includes('angular') && fwIds.includes('svelte'), 'JavaScript frameworks include alpine, vue, react, angular, and svelte');
 } catch (e) {
   assert(false, `Schema loading failed: ${e.message}`);
 }
@@ -72,6 +75,8 @@ try {
   assert(html.includes('toggleTheme()'), 'index.html contains top navigation mode switcher button');
   assert(html.includes('darkMode ? \'Switch to Light Mode\' : \'Switch to Dark Mode\''), 'index.html has accessible mode switcher label/title');
   assert(html.includes('promptforge_theme'), 'index.html contains early synchronous theme persistence check');
+  assert(html.includes('JavaScript Framework'), 'index.html contains JavaScript Framework configuration section');
+  assert(html.includes('techSelections.reactivity'), 'index.html allows binding and selection of JavaScript framework');
 } catch (e) {
   assert(false, `index.html validation failed: ${e.message}`);
 }
@@ -86,6 +91,7 @@ try {
   assert(appCode.includes('darkMode: false'), 'app.js sets light mode (darkMode: false) as default');
   assert(appCode.includes('toggleTheme'), 'app.js implements toggleTheme() method');
   assert(appCode.includes('applyTheme'), 'app.js implements applyTheme() method');
+  assert(appCode.includes('JavaScript Framework'), 'app.js includes JavaScript Framework in compiled prompt');
 } catch (e) {
   assert(false, `app.js validation failed: ${e.message}`);
 }

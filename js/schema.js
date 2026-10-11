@@ -4,6 +4,19 @@
  * dynamic custom answer capabilities, and tech stack dependencies.
  */
 
+const jsFrameworks = [
+  { id: "alpine", name: "Alpine.js 3", desc: "Rugged, minimal reactive framework declared directly in HTML" },
+  { id: "vue", name: "Vue 3", desc: "Progressive, approachable framework with Composition API & reactive refs" },
+  { id: "react", name: "React 18 / 19", desc: "Component-based declarative UI library with virtual DOM and hooks" },
+  { id: "angular", name: "Angular 18 / 19", desc: "Enterprise-grade framework with TypeScript, standalone components & Signals" },
+  { id: "svelte", name: "Svelte 5 / SvelteKit", desc: "Compiler-first framework with zero-runtime reactive runes" },
+  { id: "solid", name: "Solid.js", desc: "Declarative, high-performance UI library with fine-grained reactivity" },
+  { id: "nextjs", name: "Next.js (React)", desc: "Full-stack framework with React Server Components & App Router" },
+  { id: "nuxt", name: "Nuxt 3 (Vue)", desc: "Intuitive full-stack Vue framework with hybrid rendering" },
+  { id: "astro", name: "Astro", desc: "Content-driven framework with component islands architecture & zero JS by default" },
+  { id: "vanilla", name: "Vanilla JavaScript (ES6+)", desc: "Standard native DOM manipulation with modular zero-dependency JS" }
+];
+
 window.JAT_SCHEMA = {
   archetypes: [
     {
@@ -874,12 +887,8 @@ window.JAT_SCHEMA = {
       { id: "sheetjs", name: "SheetJS / PapaParse (for data export)", desc: "Spreadsheet and CSV parsing and generation" },
       { id: "none", name: "None (Keep dependencies ultra-lean)", desc: "Zero external utility libraries, minimal bundle footprint" }
     ],
-    reactivityEngines: [
-      { id: "alpine", name: "Alpine.js 3", desc: "Rugged, minimal reactive framework declared in HTML" },
-      { id: "vanilla", name: "Vanilla JavaScript (ES6+)", desc: "Pure DOM manipulation with modular JS functions" },
-      { id: "react", name: "React 18 / 19", desc: "Component-based UI library with hooks and virtual DOM" },
-      { id: "vue", name: "Vue 3", desc: "Progressive JavaScript framework with reactive refs" }
-    ],
+    javascriptFrameworks: jsFrameworks,
+    reactivityEngines: jsFrameworks,
     targetAgents: [
       { id: "claude_code", name: "Claude Code (CLI / Terminal agent)", desc: "Anthropic's terminal agent for high-precision autonomous coding" },
       { id: "cursor", name: "Cursor IDE (Composer / AI Chat)", desc: "AI-first code editor with prompt composer" },
