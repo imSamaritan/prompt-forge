@@ -1,0 +1,25 @@
+{
+  "templates": [
+    {
+      "id": "1",
+      "intent": "portfolio",
+      "section": "hero",
+      "title": "Developer Portfolio Hero",
+      "template": "Act as a Senior Frontend Developer. Build a comprehensive Portfolio for a [INTENT] using HTML, Bulma, and Alpine.js.\n- Headline: [HERO_TITLE]\n- Layout: [HERO_LAYOUT]\n- Bio Details: [BIO_DETAILS]\n- Social Links / CTA: [CTA_TEXT]\n- Contact Form Fields: [CONTACT_FIELDS]\n- Architectural Requirements: Clean semantic HTML5 structure, responsive Bulma card layouts, Alpine.js reactive state for interactive modals/project previews, and an accessible contact form with instant validation feedback."
+    },
+    {
+      "id": "2",
+      "intent": "ecommerce",
+      "section": "product_grid",
+      "title": "Product Catalog Grid",
+      "template": "Act as an E-Commerce Frontend Engineer. Build a high-converting product catalog and storefront for a [INTENT] using HTML, Bulma, and Alpine.js.\n- Grid Columns: [GRID_COLUMNS]\n- Card Elements: Product image container, title, price tag, and 'Add to Cart' button styled with Bulma is-primary.\n- Cart Behavior: [CART_BEHAVIOR]\n- Filter Options: [FILTER_OPTIONS]\n- Checkout Layout: [CHECKOUT_LAYOUT]\n- Interactive State: Alpine.js managing reactive local cart state, badge counter, slide-over drawer toggle, and real-time subtotal calculation."
+    },
+    {
+      "id": "3",
+      "intent": "dashboard",
+      "section": "metrics_grid",
+      "title": "SaaS Metrics KPI Grid",
+      "template": "Act as a Frontend Architect. Build an executive SaaS KPI Dashboard for a [INTENT] using HTML, Bulma, and Alpine.js.\n- Grid Columns: [GRID_COLUMNS]\n- Metric Cards: [METRIC_COUNT]\n- Data Table Structure: [TABLE_STRUCTURE]\n- Sidebar Navigation: [NAV_STYLE]\n- Spacing & Gutters: Bulma box cards with [SPACING_RULE] gutters.\n- Interactive State: Alpine.js reactive state handling metrics filtering, search/sort on the data table, and a collapsible mobile sidebar."
+    }
+  ]
+}

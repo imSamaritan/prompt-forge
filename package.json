@@ -1,0 +1,24 @@
+{
+  "name": "jat-prompt-generator",
+  "version": "1.0.0",
+  "description": "Just A Tool (JAT) - Offline-first PWA Prompt Generator built with Alpine.js and Bulma CSS",
+  "main": "index.html",
+  "scripts": {
+    "server": "json-server db.json --port 3000",
+    "dev": "json-server db.json --static . --port 3000",
+    "start": "json-server db.json --port 3000",
+    "test": "node tests/verify-app.js"
+  },
+  "keywords": [
+    "pwa",
+    "prompt-generator",
+    "alpinejs",
+    "bulma",
+    "json-server"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "json-server": "^0.17.4"
+  }
+}

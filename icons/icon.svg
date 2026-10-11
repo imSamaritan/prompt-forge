@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="pf-bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <linearGradient id="pf-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#e0e7ff" stop-opacity="0.7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded Squircle Background -->
+  <rect width="512" height="512" rx="128" fill="url(#pf-bg-grad)"/>
+
+  <!-- Subtle Inner Border Highlight -->
+  <rect x="8" y="8" width="496" height="496" rx="120" fill="none" stroke="#ffffff" stroke-width="4" stroke-opacity="0.25"/>
+
+  <!-- Magic Wand Shaft -->
+  <line x1="140" y1="372" x2="330" y2="182" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+  <!-- Wand Tip Highlight -->
+  <line x1="300" y1="212" x2="330" y2="182" stroke="#ffffff" stroke-width="32" stroke-linecap="round"/>
+
+  <!-- Sparkle Stars -->
+  <!-- Top Right Big Star -->
+  <path d="M 372 100 Q 372 140 412 140 Q 372 140 372 180 Q 372 140 332 140 Q 372 140 372 100 Z" fill="#ffffff"/>
+  
+  <!-- Small Star Top Left -->
+  <path d="M 180 140 Q 180 160 200 160 Q 180 160 180 180 Q 180 160 160 160 Q 180 160 180 140 Z" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Small Star Bottom Right -->
+  <path d="M 350 280 Q 350 298 368 298 Q 350 298 350 316 Q 350 298 332 298 Q 350 298 350 280 Z" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Accent Sparkle Dots -->
+  <circle cx="230" cy="115" r="7" fill="#ffffff" opacity="0.8"/>
+  <circle cx="420" cy="240" r="6" fill="#ffffff" opacity="0.8"/>
+  <circle cx="120" cy="270" r="6" fill="#ffffff" opacity="0.7"/>
+</svg>
