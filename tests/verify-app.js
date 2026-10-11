@@ -77,6 +77,11 @@ try {
   assert(html.includes('promptforge_theme'), 'index.html contains early synchronous theme persistence check');
   assert(html.includes('JavaScript Framework'), 'index.html contains JavaScript Framework configuration section');
   assert(html.includes('techSelections.reactivity'), 'index.html allows binding and selection of JavaScript framework');
+  assert(html.includes('x-show="hasContinued"'), 'index.html hides reset button until continued (x-show="hasContinued")');
+  assert(html.includes('toast.show'), 'index.html contains toast with toast.show binding');
+  assert(html.includes('fixed top-5') && html.includes('justify-center'), 'index.html places toast at top and centered');
+  assert(html.includes('rounded-full') && (html.includes('rose-600') || html.includes('red-600')), 'index.html styles toast as rounded with danger colour');
+  assert(html.includes('min-w-0') && html.includes('truncate') && html.includes('whitespace-nowrap'), 'index.html has responsive copy button preventing mobile overflow');
 } catch (e) {
   assert(false, `index.html validation failed: ${e.message}`);
 }
@@ -92,6 +97,10 @@ try {
   assert(appCode.includes('toggleTheme'), 'app.js implements toggleTheme() method');
   assert(appCode.includes('applyTheme'), 'app.js implements applyTheme() method');
   assert(appCode.includes('JavaScript Framework'), 'app.js includes JavaScript Framework in compiled prompt');
+  assert(appCode.includes('hasContinued'), 'app.js manages hasContinued state');
+  assert(appCode.includes('showToast'), 'app.js implements showToast() method');
+  assert(appCode.includes('hideToast'), 'app.js implements hideToast() method');
+  assert(appCode.includes('!this.selectedArchetypeId') && appCode.includes('showToast'), 'app.js validates category selection before continuing in nextStep()');
 } catch (e) {
   assert(false, `app.js validation failed: ${e.message}`);
 }
@@ -100,6 +109,7 @@ try {
 try {
   const css = fs.readFileSync(path.join(__dirname, '../css/custom.css'), 'utf8');
   assert(css.includes(':root') && css.includes('html.dark'), 'custom.css defines light mode :root and dark mode html.dark overrides');
+  assert(css.includes('[x-cloak]'), 'custom.css defines [x-cloak] to prevent unstyled flash');
 } catch (e) {
   assert(false, `custom.css validation failed: ${e.message}`);
 }
