@@ -169,6 +169,40 @@ try {
   assert(false, `Mobile meta tag validation failed: ${e.message}`);
 }
 
+// 9. Check Install App Button & Lifecycle
+try {
+  const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+  const appCode = fs.readFileSync(path.join(__dirname, '../js/app.js'), 'utf8');
+
+  assert(html.includes('promptInstall()'), 'index.html contains Install App button with promptInstall() action');
+  assert(html.includes('!isAppInstalled'), 'index.html conditionally removes Install button when isAppInstalled is true');
+  
+  const themePos = html.indexOf('toggleTheme()');
+  const installPos = html.indexOf('promptInstall()');
+  const resetPos = html.indexOf('resetWizard()');
+  assert(themePos !== -1 && installPos !== -1 && themePos < installPos && (resetPos === -1 || installPos < resetPos), 'Install button is placed next to the mode switcher on its right');
+
+  // Verify style matches copy button
+  const installBtnMatch = html.match(/<!-- Install App Button -->\s*<button[\s\S]*?<\/button>/);
+  assert(installBtnMatch !== null, 'Found Install App button element');
+  if (installBtnMatch) {
+    const btnHtml = installBtnMatch[0];
+    assert(btnHtml.includes('bg-indigo-600') && btnHtml.includes('dark:bg-[#6366f1]'), 'Install button uses copy button brand background colors');
+    assert(btnHtml.includes('rounded-lg'), 'Install button uses rounded-lg matching copy button');
+    assert(btnHtml.includes('text-white') && btnHtml.includes('text-xs font-semibold'), 'Install button uses white bold typography matching copy button');
+    assert(btnHtml.includes('<svg') && btnHtml.includes('</svg>'), 'Install button contains related icon SVG');
+    assert(btnHtml.includes('Install App') || btnHtml.includes('Install'), 'Install button contains Install App label');
+  }
+
+  // Verify app.js lifecycle logic
+  assert(appCode.includes('isAppInstalled: false'), 'app.js defines isAppInstalled state');
+  assert(appCode.includes('checkInstalledState'), 'app.js implements checkInstalledState()');
+  assert(appCode.includes('appinstalled'), 'app.js listens for appinstalled event to remove button');
+  assert(appCode.includes('display-mode: standalone'), 'app.js detects standalone display mode');
+} catch (e) {
+  assert(false, `Install App button validation failed: ${e.message}`);
+}
+
 console.log(`\nTEST SUMMARY: ${passed} Passed, ${failed} Failed`);
 if (failed > 0) {
   process.exit(1);

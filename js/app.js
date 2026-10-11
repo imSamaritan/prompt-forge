@@ -42,6 +42,7 @@ document.addEventListener('alpine:init', () => {
     finalPrompt: "",
     copied: false,
     pwaInstallPrompt: null,
+    isAppInstalled: false,
     isOnline: navigator.onLine,
 
     // Theme Mode State (Default is Light Mode)
@@ -52,10 +53,22 @@ document.addEventListener('alpine:init', () => {
       window.addEventListener('online', () => this.isOnline = true);
       window.addEventListener('offline', () => this.isOnline = false);
 
+      // Check if already installed / standalone mode
+      this.checkInstalledState();
+
       // Listen for PWA installation event
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         this.pwaInstallPrompt = e;
+      });
+
+      // Listen for app installed event
+      window.addEventListener('appinstalled', () => {
+        this.isAppInstalled = true;
+        this.pwaInstallPrompt = null;
+        try {
+          localStorage.setItem('promptforge_installed', 'true');
+        } catch (e) {}
       });
 
       // Initialize theme: Default to Light mode unless user saved 'dark'
@@ -68,6 +81,26 @@ document.addEventListener('alpine:init', () => {
 
       // Load saved state from LocalStorage if available
       this.loadSavedState();
+    },
+
+    checkInstalledState() {
+      try {
+        const isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+                             (window.navigator && window.navigator.standalone === true) ||
+                             (document.referrer && document.referrer.includes('android-app://'));
+        const storedInstalled = localStorage.getItem('promptforge_installed') === 'true';
+        this.isAppInstalled = !!isStandalone || storedInstalled;
+
+        if (window.matchMedia) {
+          window.matchMedia('(display-mode: standalone)').addEventListener('change', (e) => {
+            if (e.matches) {
+              this.isAppInstalled = true;
+            }
+          });
+        }
+      } catch (e) {
+        console.warn('[PromptForge] Check installed state error:', e);
+      }
     },
 
     toggleTheme() {
@@ -147,6 +180,9 @@ document.addEventListener('alpine:init', () => {
             this.hasContinued = this.step > 1;
           }
           if (parsed.finalPrompt) this.finalPrompt = parsed.finalPrompt;
+          if (parsed.isAppInstalled !== undefined) {
+            this.isAppInstalled = this.isAppInstalled || !!parsed.isAppInstalled;
+          }
           if (parsed.darkMode !== undefined && !localStorage.getItem('promptforge_theme')) {
             this.darkMode = !!parsed.darkMode;
             this.applyTheme();
@@ -167,7 +203,8 @@ document.addEventListener('alpine:init', () => {
           step: this.step,
           hasContinued: this.hasContinued,
           finalPrompt: this.finalPrompt,
-          darkMode: this.darkMode
+          darkMode: this.darkMode,
+          isAppInstalled: this.isAppInstalled
         };
         localStorage.setItem('promptforge_builder_state', JSON.stringify(payload));
         // Also save for backward compatibility
@@ -424,12 +461,25 @@ document.addEventListener('alpine:init', () => {
     },
 
     // Trigger PWA Installation prompt
-    promptInstall() {
-      if (!this.pwaInstallPrompt) return;
-      this.pwaInstallPrompt.prompt();
-      this.pwaInstallPrompt.userChoice.then(() => {
-        this.pwaInstallPrompt = null;
-      });
+    async promptInstall() {
+      if (this.pwaInstallPrompt) {
+        try {
+          this.pwaInstallPrompt.prompt();
+          const choiceResult = await this.pwaInstallPrompt.userChoice;
+          if (choiceResult && choiceResult.outcome === 'accepted') {
+            this.isAppInstalled = true;
+            try {
+              localStorage.setItem('promptforge_installed', 'true');
+            } catch (e) {}
+          }
+        } catch (err) {
+          console.warn('[PromptForge] PWA install prompt error:', err);
+        } finally {
+          this.pwaInstallPrompt = null;
+        }
+      } else {
+        this.showToast('To install PromptForge, use your browser address bar or menu ("Install PromptForge").', 'info');
+      }
     }
   }));
 });
