@@ -125,12 +125,48 @@ try {
   assert(false, `sw.js validation failed: ${e.message}`);
 }
 
-// 6. Check SVG Icon
+// 6. Check SVG and PNG Icons
 try {
   const iconCode = fs.readFileSync(path.join(__dirname, '../icons/icon.svg'), 'utf8');
   assert(iconCode.includes('<svg') && iconCode.includes('</svg>'), 'icons/icon.svg is valid SVG markup');
+
+  const iconsDir = path.join(__dirname, '../icons');
+  ['icon-192.png', 'icon-512.png', 'icon-maskable-192.png', 'icon-maskable-512.png'].forEach(pngFile => {
+    const pngPath = path.join(iconsDir, pngFile);
+    assert(fs.existsSync(pngPath) && fs.statSync(pngPath).size > 1000, `icons/${pngFile} exists and is non-empty PNG`);
+  });
 } catch (e) {
-  assert(false, `icon.svg validation failed: ${e.message}`);
+  assert(false, `Icon validation failed: ${e.message}`);
+}
+
+// 7. Check Manifest.json PWA Compliance
+try {
+  const manifestRaw = fs.readFileSync(path.join(__dirname, '../manifest.json'), 'utf8');
+  const manifest = JSON.parse(manifestRaw);
+  assert(manifest.name && manifest.short_name, 'manifest.json defines name and short_name');
+  assert(manifest.start_url === './index.html', 'manifest.json specifies relative start_url for GitHub Pages');
+  assert(manifest.scope === './', 'manifest.json specifies relative scope for GitHub Pages');
+  assert(manifest.id, 'manifest.json specifies explicit id for unique WebAPK identity');
+  assert(manifest.display === 'standalone', 'manifest.json display is standalone');
+  assert(Array.isArray(manifest.icons) && manifest.icons.length >= 4, 'manifest.json defines required raster and vector icons');
+
+  const iconSizes = manifest.icons.map(i => `${i.sizes}:${i.type}:${i.purpose || 'any'}`);
+  assert(iconSizes.some(s => s.includes('192x192') && s.includes('image/png')), 'manifest.json includes 192x192 PNG icon');
+  assert(iconSizes.some(s => s.includes('512x512') && s.includes('image/png')), 'manifest.json includes 512x512 PNG icon');
+  assert(iconSizes.some(s => s.includes('maskable') && s.includes('image/png')), 'manifest.json includes maskable PNG icon');
+} catch (e) {
+  assert(false, `manifest.json validation failed: ${e.message}`);
+}
+
+// 8. Check Mobile Meta Tags in index.html
+try {
+  const html = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+  assert(html.includes('mobile-web-app-capable'), 'index.html contains mobile-web-app-capable meta tag');
+  assert(html.includes('apple-mobile-web-app-capable'), 'index.html contains apple-mobile-web-app-capable meta tag');
+  assert(html.includes('icon-192.png'), 'index.html references icon-192.png for mobile app icon');
+  assert(html.includes('apple-touch-icon'), 'index.html provides apple-touch-icon link');
+} catch (e) {
+  assert(false, `Mobile meta tag validation failed: ${e.message}`);
 }
 
 console.log(`\nTEST SUMMARY: ${passed} Passed, ${failed} Failed`);
