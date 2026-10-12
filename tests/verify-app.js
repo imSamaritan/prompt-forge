@@ -199,6 +199,12 @@ try {
   assert(appCode.includes('checkInstalledState'), 'app.js implements checkInstalledState()');
   assert(appCode.includes('appinstalled'), 'app.js listens for appinstalled event to remove button');
   assert(appCode.includes('display-mode: standalone'), 'app.js detects standalone display mode');
+
+  // Verify early PWA beforeinstallprompt capture and proxy avoidance
+  assert(html.includes('deferredInstallPrompt'), 'index.html contains early deferredInstallPrompt capture script');
+  assert(html.includes('beforeinstallprompt'), 'index.html captures beforeinstallprompt in head');
+  assert(appCode.includes('deferredInstallPrompt'), 'app.js checks and syncs deferredInstallPrompt');
+  assert(appCode.includes('rawPrompt'), 'app.js unproxies prompt event to prevent illegal invocation');
 } catch (e) {
   assert(false, `Install App button validation failed: ${e.message}`);
 }

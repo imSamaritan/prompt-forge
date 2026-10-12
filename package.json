@@ -7,7 +7,7 @@
     "server": "json-server db.json --port 3000",
     "dev": "json-server db.json --static . --port 3000",
     "start": "json-server db.json --port 3000",
-    "test": "node tests/verify-app.js"
+    "test": "node tests/verify-app.js && node tests/test-runtime-simulation.js"
   },
   "keywords": [
     "pwa",

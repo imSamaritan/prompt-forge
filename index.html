@@ -23,6 +23,18 @@
     })();
   </script>
 
+  <!-- Early PWA Install Prompt Capture for Mobile & Desktop Browsers -->
+  <script>
+    window.deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      window.deferredInstallPrompt = e;
+      if (typeof window.dispatchEvent === 'function') {
+        window.dispatchEvent(new CustomEvent('pwa:promptready'));
+      }
+    });
+  </script>
+
   <!-- Mobile & PWA Capability Meta Tags -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -734,11 +746,9 @@
   <!-- Service Worker Registration -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
-          .then((reg) => console.log('[PWA] Service Worker registered:', reg.scope))
-          .catch((err) => console.warn('[PWA] Service Worker registration failed:', err));
-      });
+      navigator.serviceWorker.register('./sw.js', { scope: './' })
+        .then((reg) => console.log('[PWA] Service Worker registered:', reg.scope))
+        .catch((err) => console.warn('[PWA] Service Worker registration failed:', err));
     }
   </script>
 
