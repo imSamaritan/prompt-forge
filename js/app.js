@@ -4,6 +4,13 @@
  * tech stack selection, offline persistence, and prompt compilation.
  */
 
+// Global raw PWA install prompt capture
+window.deferredInstallPrompt = window.deferredInstallPrompt || null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  window.deferredInstallPrompt = e;
+});
+
 document.addEventListener('alpine:init', () => {
   Alpine.data('jatBuilder', () => ({
     // Navigation & Wizard State
@@ -56,16 +63,30 @@ document.addEventListener('alpine:init', () => {
       // Check if already installed / standalone mode
       this.checkInstalledState();
 
+      // Check if deferred install prompt was already captured
+      if (window.deferredInstallPrompt) {
+        this.pwaInstallPrompt = window.deferredInstallPrompt;
+      }
+
       // Listen for PWA installation event
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
+        window.deferredInstallPrompt = e;
         this.pwaInstallPrompt = e;
+      });
+
+      // Listen for prompt readiness notification from early head script
+      window.addEventListener('pwa:promptready', () => {
+        if (window.deferredInstallPrompt) {
+          this.pwaInstallPrompt = window.deferredInstallPrompt;
+        }
       });
 
       // Listen for app installed event
       window.addEventListener('appinstalled', () => {
         this.isAppInstalled = true;
         this.pwaInstallPrompt = null;
+        window.deferredInstallPrompt = null;
         try {
           localStorage.setItem('promptforge_installed', 'true');
         } catch (e) {}
@@ -462,10 +483,41 @@ document.addEventListener('alpine:init', () => {
 
     // Trigger PWA Installation prompt
     async promptInstall() {
-      if (this.pwaInstallPrompt) {
+      // Obtain the raw unproxied BeforeInstallPromptEvent to prevent Proxy 'Illegal invocation' errors
+      let rawPrompt = window.deferredInstallPrompt;
+      if (!rawPrompt && this.pwaInstallPrompt) {
+        rawPrompt = (window.Alpine && typeof window.Alpine.raw === 'function')
+          ? window.Alpine.raw(this.pwaInstallPrompt)
+          : this.pwaInstallPrompt;
+      }
+
+      // If prompt event has not yet arrived on mobile, wait briefly within user gesture window
+      if (!rawPrompt) {
+        rawPrompt = await new Promise((resolve) => {
+          let resolved = false;
+          const handler = (e) => {
+            if (!resolved) {
+              resolved = true;
+              window.removeEventListener('beforeinstallprompt', handler);
+              resolve(e);
+            }
+          };
+          window.addEventListener('beforeinstallprompt', handler, { once: true });
+          setTimeout(() => {
+            if (!resolved) {
+              resolved = true;
+              window.removeEventListener('beforeinstallprompt', handler);
+              resolve(window.deferredInstallPrompt || null);
+            }
+          }, 400);
+        });
+      }
+
+      if (rawPrompt) {
         try {
-          this.pwaInstallPrompt.prompt();
-          const choiceResult = await this.pwaInstallPrompt.userChoice;
+          // Native browser installation modal / bottom sheet
+          await rawPrompt.prompt();
+          const choiceResult = await rawPrompt.userChoice;
           if (choiceResult && choiceResult.outcome === 'accepted') {
             this.isAppInstalled = true;
             try {
@@ -476,9 +528,10 @@ document.addEventListener('alpine:init', () => {
           console.warn('[PromptForge] PWA install prompt error:', err);
         } finally {
           this.pwaInstallPrompt = null;
+          window.deferredInstallPrompt = null;
         }
       } else {
-        this.showToast('To install PromptForge, use your browser address bar or menu ("Install PromptForge").', 'info');
+        this.showToast('To install PromptForge, tap your browser menu (⋮ or Share) and select "Add to Home screen" or "Install App".', 'info');
       }
     }
   }));

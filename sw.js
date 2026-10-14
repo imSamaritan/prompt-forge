@@ -1,4 +1,4 @@
-const CACHE_NAME = 'promptforge-cache-v5';
+const CACHE_NAME = 'promptforge-cache-v6';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -12,7 +12,14 @@ const STATIC_ASSETS = [
   './icons/icon-maskable-192.png',
   './icons/icon-maskable-512.png',
   'https://cdn.tailwindcss.com',
-  'https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js'
+  'https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/webfonts/fa-solid-900.woff2',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/webfonts/fa-solid-900.ttf',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/webfonts/fa-regular-400.woff2',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/webfonts/fa-regular-400.ttf',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/webfonts/fa-brands-400.woff2',
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/webfonts/fa-brands-400.ttf'
 ];
 
 self.addEventListener('install', (event) => {
