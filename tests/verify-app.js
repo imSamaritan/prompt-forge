@@ -82,6 +82,8 @@ try {
   assert(html.includes('fixed top-5') && html.includes('justify-center'), 'index.html places toast at top and centered');
   assert(html.includes('rounded-full') && (html.includes('rose-600') || html.includes('red-600')), 'index.html styles toast as rounded with danger colour');
   assert(html.includes('min-w-0') && html.includes('truncate') && html.includes('whitespace-nowrap'), 'index.html has responsive copy button preventing mobile overflow');
+  assert(html.includes('font-awesome') || html.includes('fontawesome'), 'index.html links to FontAwesome stylesheet');
+  assert(html.includes('fa-solid'), 'index.html contains FontAwesome icon classes');
 } catch (e) {
   assert(false, `index.html validation failed: ${e.message}`);
 }
@@ -121,6 +123,8 @@ try {
   assert(swCode.includes('./js/app.js'), 'sw.js pre-caches js/app.js');
   assert(swCode.includes('./css/custom.css'), 'sw.js pre-caches css/custom.css');
   assert(swCode.includes('./icons/icon.svg'), 'sw.js pre-caches icons/icon.svg');
+  assert(swCode.includes('font-awesome') && swCode.includes('all.min.css'), 'sw.js pre-caches FontAwesome CSS');
+  assert(swCode.includes('fa-solid-900.woff2'), 'sw.js pre-caches FontAwesome solid webfonts for offline use');
 } catch (e) {
   assert(false, `sw.js validation failed: ${e.message}`);
 }
@@ -190,7 +194,7 @@ try {
     assert(btnHtml.includes('bg-indigo-600') && btnHtml.includes('dark:bg-[#6366f1]'), 'Install button uses copy button brand background colors');
     assert(btnHtml.includes('rounded-lg'), 'Install button uses rounded-lg matching copy button');
     assert(btnHtml.includes('text-white') && btnHtml.includes('text-xs font-semibold'), 'Install button uses white bold typography matching copy button');
-    assert(btnHtml.includes('<svg') && btnHtml.includes('</svg>'), 'Install button contains related icon SVG');
+    assert(btnHtml.includes('fa-download') || btnHtml.includes('fa-') || (btnHtml.includes('<svg') && btnHtml.includes('</svg>')), 'Install button contains related icon');
     assert(btnHtml.includes('Install App') || btnHtml.includes('Install'), 'Install button contains Install App label');
   }
 
